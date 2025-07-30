@@ -49,7 +49,7 @@ function Footer() {
                 </div>
             </div>
             <div className="flex items-center justify-center px-6 pt-12 text-sm">
-                <span className="dark:text-gray-600">© Copyright 1986. All Rights Reserved.</span>
+                <span className="dark:text-gray-600">&copy; Copyright 2025. All Rights Reserved.</span>
             </div>
         </footer>
     )
