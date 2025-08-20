@@ -1,71 +1,61 @@
-import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import Card from "./Card";
-import RandomCard from "./RandomCard";
+import { useEffect, useState } from "react";
 import { Pagination } from "antd";
 import { scrollTopByElem } from "../../utility/scrollTop";
-import Loading from "../Loading";
 import Error from "../error/Error";
+import Loading from "../Loading";
 
-function Main() {
+function Region() {
+  const { continent } = useParams();
   const [data, setData] = useState([]);
   const [count, setCount] = useState(12);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [randomIndex, setRandomIndex] = useState(null);
-
-  const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
   // useEffect(() => {
-  //   fetch(
-  //     "https://restcountries.com/v3.1/all?fields=name,cca3,capital,region,borders,area,flags"
-  //   )
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       setData(data);
-  //       setRandomIndex(rand(0, data.length - 1));
-  //     });
-
-  //   rand(0, data.length - 1);
-  // }, []);
+  //   fetch(`https://restcountries.com/v3.1/region/${continent}`)
+  //     .then(res => res.json())
+  //     .then(data => setData(data))
+  // }, [continent])
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      setError(null);
+      setError(null)
       try {
-        const res = await fetch(
-          "https://restcountries.com/v3.1/all?fields=name,cca3,capital,region,borders,area,flags"
+        const response = await fetch(
+          `https://restcountries.com/v3.1/region/${continent}`
         );
-        if (!res.ok) throw new Error(`Response status: ${res.status}`);
-        const result = await res.json();
+        if(!response.ok) throw new Error(`Response status: ${response.status}`)
+        const result = await response.json();
         setData(result);
-        if (result.length > 0) setRandomIndex(rand(0, result.length - 1));
       } catch (error) {
         setError(error)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
     };
     fetchData();
-  }, []);
+  }, [continent]);
 
-  if (isLoading) return <Loading />;
+
+  if(isLoading) return <Loading />;
   if(error) return <Error />;
 
   return (
     <section className="py-6 sm:py-12 dark:bg-gray-800 bg-gray-100 dark:text-gray-100 text-gray-800">
       <div className="container p-6 mx-auto space-y-8">
-        <div className="space-y-2 text-center">
-          <h2 className="text-3xl font-bold">Partem reprimique an pro</h2>
+        <div id="content" className="space-y-2 text-center">
+          <h2 className="text-3xl font-bold">
+            Welcome to{" "}
+            {continent ? continent[0].toUpperCase() + continent.slice(1) : ""}
+          </h2>
           <p className="font-serif text-sm text-gray-400 dark:text-gray-600">
             Qualisque erroribus usu at, duo te agam soluta mucius.
           </p>
         </div>
-        {data[randomIndex] && <RandomCard {...data[randomIndex]} />}
-        <div
-          id="content"
-          className="grid grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-2 lg:grid-cols-4"
-        >
+        <div className="grid grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-2 lg:grid-cols-4">
           {data.slice(count - 12, count).map((item) => (
             <Card key={item.cca3} {...item} />
           ))}
@@ -85,4 +75,4 @@ function Main() {
   );
 }
 
-export default Main;
+export default Region;
